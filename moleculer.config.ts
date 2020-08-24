@@ -1,5 +1,5 @@
-"use strict";
-import {BrokerOptions, Errors, MetricRegistry, ServiceBroker} from "moleculer";
+'use strict'
+import {BrokerOptions, Errors, MetricRegistry, ServiceBroker} from 'moleculer'
 
 /**
  * Moleculer ServiceBroker configuration file
@@ -28,7 +28,7 @@ import {BrokerOptions, Errors, MetricRegistry, ServiceBroker} from "moleculer";
  */
 const brokerConfig: BrokerOptions = {
 	// Namespace of nodes to segment your nodes on the same network.
-	namespace: "",
+	namespace: '',
 	// Unique node identifier. Must be unique in a namespace.
 	nodeID: null,
 	// Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
@@ -37,14 +37,14 @@ const brokerConfig: BrokerOptions = {
 	// Enable/disable logging or use custom logger. More info: https://moleculer.services/docs/0.14/logging.html
 	// Available logger types: "Console", "File", "Pino", "Winston", "Bunyan", "debug", "Log4js", "Datadog"
 	logger: {
-		type: "Console",
+		type: 'Console',
 		options: {
 			// Using colors on the output
 			colors: true,
 			// Print module names with different colors (like docker-compose for containers)
 			moduleColors: false,
 			// Line formatter. It can be "json", "short", "simple", "full", a `Function` or a template string like "{timestamp} {level} {nodeID}/{mod}: {msg}"
-			formatter: "full",
+			formatter: 'full',
 			// Custom object printer. If not defined, it uses the `util.inspect` method.
 			objectPrinter: null,
 			// Auto-padding the module name in order to messages begin at the same column.
@@ -53,7 +53,7 @@ const brokerConfig: BrokerOptions = {
 	},
 	// Default log level for built-in console logger. It can be overwritten in logger options above.
 	// Available values: trace, debug, info, warn, error, fatal
-	logLevel: "info",
+	logLevel: 'info',
 
 	// Define transporter.
 	// More info: https://moleculer.services/docs/0.14/networking.html
@@ -63,12 +63,12 @@ const brokerConfig: BrokerOptions = {
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
-    cacher: "Memory",
+    cacher: 'Memory',
 
 	// Define a serializer.
 	// Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".
 	// More info: https://moleculer.services/docs/0.14/networking.html#Serialization
-	serializer: "JSON",
+	serializer: 'JSON',
 
 	// Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
 	requestTimeout: 10 * 1000,
@@ -115,7 +115,7 @@ const brokerConfig: BrokerOptions = {
 	registry: {
 		// Define balancing strategy. More info: https://moleculer.services/docs/0.14/balancing.html
 		// Available values: "RoundRobin", "Random", "CpuUsage", "Latency", "Shard"
-		strategy: "RoundRobin",
+		strategy: 'RoundRobin',
 		// Enable local action call preferring. Always call the local action instance if available.
 		preferLocal: true,
 	},
@@ -156,7 +156,7 @@ const brokerConfig: BrokerOptions = {
 		enabled: false,
 		// Available built-in reporters: "Console", "CSV", "Event", "Prometheus", "Datadog", "StatsD"
 		reporter: {
-			type: "",
+			type: '',
 		},
 	},
 
@@ -165,7 +165,7 @@ const brokerConfig: BrokerOptions = {
 		enabled: false,
 		// Available built-in exporters: "Console", "Datadog", "Event", "EventLegacy", "Jaeger", "Zipkin"
 		exporter: {
-			type: "", // Console exporter is only for development!
+			type: '', // Console exporter is only for development!
 		},
 	},
 
@@ -182,6 +182,6 @@ const brokerConfig: BrokerOptions = {
 	stopped: async (broker: ServiceBroker): Promise<void> => {},
 	 */
 
-};
+}
 
-export = brokerConfig;
+export = brokerConfig

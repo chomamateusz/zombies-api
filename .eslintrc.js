@@ -64,12 +64,12 @@ module.exports = {
 		"@typescript-eslint/prefer-namespace-keyword": "error",
 		"@typescript-eslint/quotes": [
 			"error",
-			"double",
+			"single",
 			{
 				avoidEscape: true
 			}
 		],
-		"@typescript-eslint/semi": ["error", "always"],
+		"@typescript-eslint/semi": ["error", "never"],
 		"@typescript-eslint/triple-slash-reference": "error",
 		"@typescript-eslint/type-annotation-spacing": "error",
 		"@typescript-eslint/unified-signatures": "error",
@@ -121,6 +121,7 @@ module.exports = {
 		"no-unsafe-finally": "error",
 		"no-unused-expressions": "error",
 		"no-unused-labels": "error",
+		"@typescript-eslint/no-unused-vars": "error",
 		"no-var": "error",
 		"object-shorthand": "error",
 		"one-var": ["error", "never"],

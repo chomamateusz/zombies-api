@@ -20,7 +20,7 @@ const additionalTests = ({ dbService }: AdditionalTestsParams) => {
   describe('Additional assumptions', () => {
 
     it('zombie can have a maximum of 5 items', async () => {
-      expect.assertions(1)
+      expect.assertions(2)
 
       await dbService.create(1)
       await dbService.create(2)
@@ -29,10 +29,14 @@ const additionalTests = ({ dbService }: AdditionalTestsParams) => {
       await dbService.create(5)
 
       try {
-        await dbService.create(5)
+        await dbService.create(6)
       } catch (error) {
         expect(error.code).toBe(403)
       }
+
+      const count = await dbService.broker.call('zombie-items.count')
+      expect(count).toBe(5)
+
     })
 
   })

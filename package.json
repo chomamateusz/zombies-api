@@ -28,6 +28,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.2",
     "jest": "^25.1.0",
     "jest-cli": "^25.1.0",
+    "jest-extended": "^0.11.5",
     "moleculer-repl": "^0.6.2",
     "ts-jest": "^25.3.0",
     "ts-node": "^8.8.1"
@@ -46,6 +47,9 @@
     "node": ">= 10.x.x"
   },
   "jest": {
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ],
     "coverageDirectory": "<rootDir>/coverage",
     "testEnvironment": "node",
     "moduleFileExtensions": [

@@ -1,5 +1,5 @@
 import { ServiceSchema } from 'moleculer'
-import RequestCacheMixin from '../mixins/RequestChache'
+import RequestCacheMixin from '../mixins/request-cacher.mixin'
 
 export interface ItemSchema {
   _id: string;

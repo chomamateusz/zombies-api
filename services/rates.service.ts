@@ -1,65 +1,24 @@
 import { ServiceSchema } from 'moleculer'
-import axios from 'axios'
+import RequestCacheMixin from '../mixins/request-cacher.mixin'
 
-const ITEMS_URL = 'http://api.nbp.pl/api/exchangerates/tables/C/today/'
-
-export interface ItemSchema {
+export interface RateSchema {
   _id: string;
   name: string;
   price: number;
 }
 
-const ItemsService: ServiceSchema = {
+const RatesService: ServiceSchema = {
 
-  name: 'items',
+  name: 'rates',
 
-  settings: {
-    lastUpdate: 0,
-    updatePeriod: 24 * 60 * 60 * 1000,
-    fields: ['_id', 'name', 'price'],
-    entityValidator: {
-      name: 'string',
-      items: 'number',
-    },
-  },
-
-  actions: {
-    get: {
-      async handler() {
-        console.log(this.settings.lastUpdate, this.settings.updatePeriod)
-
-        if (this.serveFromCache()) {
-          this.logger.info('[RATES] Item\'s are served from cache!')
-          return this.broker.cacher.get('rates.get')
-        }
-
-        this.logger.info('[RATES] Get request. Item\'s are NOT served from cache!')
-        const { data } = await axios.get(ITEMS_URL)
-
-        this.broker.cacher.set('rates.get', data)
-
-        console.log(this.settings.lastUpdate, this.settings.updatePeriod)
-
-        return data
-      },
-    },
-  },
-
-  methods: {
-    serveFromCache() {
-      const now = Date.now()
-      const updatePeriod = this.settings.updatePeriod
-      const lastUpdate = this.settings.lastUpdate
-      const periodsPassed = Math.floor((now - (now % updatePeriod)) / updatePeriod)
-
-      if (lastUpdate === periodsPassed) return true
-
-      this.settings.lastUpdate = periodsPassed
-
-      return false
-    },
-  },
+  mixins: [
+    RequestCacheMixin({
+      name: 'Rates',
+      url: 'http://api.nbp.pl/api/exchangerates/tables/C/today/',
+      updatePeriod: 24 * 60 * 60 * 1000,
+    }),
+  ],
 
 }
 
-export default ItemsService
+export default RatesService

@@ -3,11 +3,16 @@ import { ServiceSchema, ServiceBroker, Errors } from 'moleculer'
 
 import DbServiceOperations, { ListDBActionResponse } from './DbServiceOperations'
 
+export interface AdditionalTestsParams {
+  dbService: any
+}
+
 interface MakeDbServiceTests<ItemSchema> {
   service: ServiceSchema,
-  makeItem: (index: number) =>  Omit<ItemSchema, '_id'>
+  makeItem: (index: number) => Omit<ItemSchema, '_id'>
   makeItemWithWrongParamsNames: (index: number) => object
   makeItemWithWrongParamsTypes: (index: number) => object,
+  additionalTests?: (params: AdditionalTestsParams) => void,
 }
 
 interface IdWise {
@@ -19,16 +24,17 @@ const makeDbServiceTests = <ItemSchema extends IdWise>({
   makeItem,
   makeItemWithWrongParamsNames,
   makeItemWithWrongParamsTypes,
+  additionalTests,
 }: MakeDbServiceTests<ItemSchema>) => {
-  
-  const serviceName = service.name
-  if(!serviceName) throw new Error('Can\'t run if service do not have name!')
 
-  describe(`Test \'${serviceName}\' service`, () => {
+  const serviceName = service.name
+  if (!serviceName) throw new Error('Can\'t run if service do not have name!')
+
+  describe(`Test \'${serviceName}\' service CRUD`, () => {
 
     const broker = new ServiceBroker({ logger: false })
     broker.createService(service)
-  
+
     const dbService = new DbServiceOperations<ItemSchema>(
       broker,
       serviceName,
@@ -167,6 +173,8 @@ const makeDbServiceTests = <ItemSchema extends IdWise>({
       })
 
     })
+
+    additionalTests && additionalTests({ dbService })
 
   })
 

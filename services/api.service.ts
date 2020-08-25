@@ -12,7 +12,9 @@ export default {
       ],
       autoAliases: true,
 
-      aliases: {},
+      aliases: {
+        'REST zombies': 'zombies'
+      },
 
       bodyParsers: {
         json: {

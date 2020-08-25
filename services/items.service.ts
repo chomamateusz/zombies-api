@@ -2,9 +2,9 @@ import { ServiceSchema } from 'moleculer'
 import RequestCacheMixin from '../mixins/request-cacher.mixin'
 
 export interface ItemSchema {
-  _id: string;
-  name: string;
-  price: number;
+  id: string
+  name: string
+  price: number
 }
 
 const ItemsService: ServiceSchema = {

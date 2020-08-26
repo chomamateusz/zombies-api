@@ -6,7 +6,7 @@ import { ItemSchema } from './items.service'
 export interface ZombieSchema {
   _id: string
   name: string
-  items: ItemSchema[]
+  items?: ItemSchema[]
 }
 
 const ZombiesService: ServiceSchema = {
@@ -22,10 +22,9 @@ const ZombiesService: ServiceSchema = {
   },
 
   settings: {
-    fields: ['_id', 'name', 'items', 'createdAt'],
+    fields: ['_id', 'name', 'createdAt'],
     entityValidator: {
       name: 'string',
-      items: 'array',
     },
     populate: {
       items: 'zombie-items.get',

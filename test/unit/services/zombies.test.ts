@@ -5,14 +5,12 @@ type ZombieSchemaWithoutId = Omit<ZombieSchema, '_id'>
 
 const makeItem = (index: number): ZombieSchemaWithoutId => ({
   name: `Zombie ${index}`,
-  items: [],
 })
 const makeItemWithWrongParamsNames = (index: number): object => ({
-  name: `Zombie ${index}`,
+  firstName: `Zombie ${index}`,
 })
 const makeItemWithWrongParamsTypes = (index: number): object => ({
-  name: `Zombie ${index}`,
-  items: {},
+  name: {},
 })
 
 makeDbServiceTests<ZombieSchema>({

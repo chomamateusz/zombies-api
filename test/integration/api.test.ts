@@ -47,7 +47,6 @@ const makeListResponse = (params: object): object => ({
 
 const SAMPLE_ZOMBIE_1: Omit<ZombieSchema, '_id'> = {
   name: 'Zombie 1',
-  items: [],
 }
 
 const getFirstZombie = async (): Promise<ZombieSchema> => {

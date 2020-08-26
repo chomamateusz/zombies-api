@@ -7,12 +7,12 @@ import ZombieItemsService from '../../services/zombie-items.service'
 import ZombieItemsMiddlewareService from '../../services/zombie-items-middleware.service'
 
 const MOCK_ITEMS = [
-  { id: '1', name: 'Item 1', price: 1 },
-  { id: '2', name: 'Item 2', price: 2 },
-  { id: '3', name: 'Item 3', price: 3 },
-  { id: '4', name: 'Item 4', price: 4 },
-  { id: '5', name: 'Item 5', price: 5 },
-  { id: '6', name: 'Item 6', price: 6 },
+  { id: 1, name: 'Item 1', price: 1 },
+  { id: 2, name: 'Item 2', price: 2 },
+  { id: 3, name: 'Item 3', price: 3 },
+  { id: 4, name: 'Item 4', price: 4 },
+  { id: 5, name: 'Item 5', price: 5 },
+  { id: 6, name: 'Item 6', price: 6 },
 ]
 
 const MockItemsService: ServiceSchema = {
@@ -54,6 +54,12 @@ const getFirstZombie = async (): Promise<ZombieSchema> => {
   const zombie = listZombieData && listZombieData.rows && listZombieData.rows[0]
 
   return zombie
+}
+const getFirstZombiesItem = async (zombieId: string): Promise<ZombieSchema> => {
+  const { data } = await axios.get(makeItemsUrl(zombieId))
+  const item = data && data.rows && data.rows.pop()
+
+  return item
 }
 
 const BASE_URL = 'http://localhost:3000/api'
@@ -289,15 +295,14 @@ describe('Integration tests', () => {
       expect.assertions(1)
 
       const { _id: zombieId } = await getFirstZombie()
-
-      const itemId = '1'
-
+      const { _id: itemId } = await getFirstZombiesItem(zombieId)
+      
       const { data } = await axios.get(makeItemsUrl(zombieId) + '/' + itemId)
 
       expect(data).toEqual({
         ...MOCK_ITEMS[0],
         zombieId,
-        itemId,
+        itemId: String(MOCK_ITEMS[0].id),
         _id: expect.any(String),
         createdAt: expect.any(String),
         pricesTotal: { EUR: 4, USD: 3, PLN: 1 },
@@ -308,7 +313,6 @@ describe('Integration tests', () => {
       expect.assertions(1)
 
       const { _id: zombieId } = await getFirstZombie()
-
       const { data } = await axios.get(makeItemsUrl(zombieId))
 
       const USDRates = MOCK_RATES.find((rate) => rate.code === 'USD')
@@ -317,7 +321,7 @@ describe('Integration tests', () => {
         .filter((item, index) => index < 5)
         .map((item) => ({
           ...item,
-          itemId: item.id,
+          itemId: String(item.id),
           zombieId,
           _id: expect.any(String),
           createdAt: expect.any(String),

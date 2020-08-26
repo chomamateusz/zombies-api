@@ -31,13 +31,13 @@ const ZombieItemsService: ServiceSchema = {
 
   actions: {
     get(ctx: Context) {
-      const params: { itemId?: string, zombieId?: string } = ctx && ctx.params
-      const itemId = params.itemId
+      const params: { id?: string, zombieId?: string } = ctx && ctx.params
+      const id = params.id
       const zombieId = params.zombieId
 
-      if (!itemId) return ctx.call('zombie-items.list', { query: { zombieId }, sort: '-itemId' })
+      if (!id) return ctx.call('zombie-items.list', { query: { zombieId }, sort: '-createdAt' })
 
-      return ctx.call('zombie-items.find', { query: { zombieId, itemId } }).then(([item]) => item)
+      return ctx.call('zombie-items.find', { query: { zombieId, _id: id } }).then(([item]) => item)
     },
     create(ctx: Context) {
       return ctx.call('zombie-items.create', ctx.params)
@@ -46,7 +46,7 @@ const ZombieItemsService: ServiceSchema = {
       return ctx.call('zombie-items.update', ctx.params)
     },
     remove(ctx: Context) {
-      return ctx.call('zombie-items.update', ctx.params)
+      return ctx.call('zombie-items.remove', ctx.params)
     },
   },
 
@@ -68,10 +68,10 @@ const ZombieItemsService: ServiceSchema = {
     },
 
     async populateItems(ctx: Context, res: any): Promise<object> {
-      const params: { itemId?: string } = ctx && ctx.params
-      const itemId = params.itemId
+      const params: { id?: string } = ctx && ctx.params
+      const id = params.id
 
-      if (itemId) {
+      if (id) {
         const populatedItem = await this.populateItem(ctx, res)
         const pricesTotal = await this.calculateItemsValue(ctx, [populatedItem])
 
@@ -97,7 +97,7 @@ const ZombieItemsService: ServiceSchema = {
 
       const items: ItemSchema[] = await ctx.call('items.get')
 
-      const populatedItem = items && items.find((item) => item.id === itemId)
+      const populatedItem = items && items.find((item) => String(item.id) === String(itemId))
 
       return {
         ...item,

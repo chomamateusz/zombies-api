@@ -51,7 +51,7 @@ const ZombieItemsService: ServiceSchema = {
 
       const items: ItemSchema[] = await ctx.call('items.get')
 
-      const item = items.find((item) => item.id === itemId)
+      const item = items.find((item) => String(item.id) === String(itemId))
 
       if (!item) throw new Errors.MoleculerError('Can\'t add unknown item!', 403)
 

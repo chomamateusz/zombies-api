@@ -13,7 +13,8 @@ export default {
       autoAliases: true,
 
       aliases: {
-        'REST zombies': 'zombies'
+        'REST zombies': 'zombies',
+        'REST zombies/:zombieId/items': 'zombie-items-middleware',
       },
 
       bodyParsers: {

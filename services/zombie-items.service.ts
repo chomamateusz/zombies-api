@@ -1,6 +1,7 @@
 import DbService from 'moleculer-db'
 import { ServiceSchema, Context, Errors } from 'moleculer'
 import { ItemSchema } from './items.service'
+import { RateSchema } from './rates.service'
 
 export interface ZombieItemSchema {
   _id: string;
@@ -30,7 +31,6 @@ const ZombieItemsService: ServiceSchema = {
       itemId: 'string',
     },
   },
-
 
   methods: {
 

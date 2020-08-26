@@ -1,4 +1,4 @@
-import { ServiceSchema } from 'moleculer'
+import { ServiceSchema, Context } from 'moleculer'
 import RequestCacheMixin from '../mixins/request-cacher.mixin'
 
 export interface ItemSchema {
@@ -10,6 +10,15 @@ export interface ItemSchema {
 const ItemsService: ServiceSchema = {
 
   name: 'items',
+
+  hooks: {
+    after: {
+      // transform response - we are only interested in items
+      get: (ctx: Context, res): Promise<any> => {
+        return res && res.items
+      },
+    },
+  },
 
   mixins: [
     RequestCacheMixin({

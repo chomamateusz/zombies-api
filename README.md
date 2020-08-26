@@ -1,34 +1,262 @@
-[![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
-
-# zombies
-This is a [Moleculer](https://moleculer.services/)-based microservices project. Generated with the [Moleculer CLI](https://moleculer.services/docs/0.14/moleculer-cli.html).
+# Zombies API
 
 ## Usage
-Start the project with `npm run dev` command. 
-After starting, open the http://localhost:3000/ URL in your browser. 
-On the welcome page you can test the generated services via API Gateway and check the nodes & services.
 
-In the terminal, try the following commands:
-- `nodes` - List all connected nodes.
-- `actions` - List all registered service actions.
-- `call greeter.hello` - Call the `greeter.hello` action.
-- `call greeter.welcome --name John` - Call the `greeter.welcome` action with the `name` parameter.
-- `call products.list` - List the products (call the `products.list` action).
+Start the project with `npm run dev` command.
+After starting, open the http://localhost:3000/ URL in your browser.
 
+## Endpoints
+
+All endpoints receive and outputs data by JSON.
+
+### `POST /api/zombies`
+
+Create zombie.
+
+Example body:
+
+```json
+{
+    "name": "Zombie 1"
+}
+```
+
+Parameters:
+
+- `name: string` - [REQUIRED] The name of the zombie.
+
+Example response body:
+
+```json
+{
+    "_id": "T4hOEew89wP5XxPj",
+    "name": "Zombie 1",
+    "createdAt": "2020-08-26T13:15:57.324Z"
+}
+```
+
+### `GET /api/zombies`
+
+List of all zombies
+
+Example response body:
+
+```json
+{
+    "rows": [
+        {
+            "_id": "T4hOEew89wP5XxPj",
+            "name": "Zombie 1",
+            "createdAt": "2020-08-26T13:15:57.324Z"
+        }
+    ],
+    "total": 1,
+    "page": 1,
+    "pageSize": 10,
+    "totalPages": 1
+}
+```
+
+### `GET /api/zombies/:zombieId`
+
+Get single zombie.
+
+Example response body:
+
+```json
+{
+    "_id": "T4hOEew89wP5XxPj",
+    "name": "Zombie 1",
+    "createdAt": "2020-08-26T13:15:57.324Z"
+}
+```
+
+### `PUT /api/zombies/:zombieId`
+
+Update single zombie.
+
+Example body:
+
+```json
+{
+    "name": "Zombie 2.0"
+}
+```
+
+Parameters:
+
+- `name: string` - [REQUIRED] The name of the zombie.
+
+Example response body:
+
+```json
+{
+    "_id": "T4hOEew89wP5XxPj",
+    "name": "Zombie 2.0",
+    "createdAt": "2020-08-26T13:15:57.324Z"
+}
+```
+
+### `DELETE /api/zombies/:zombieId`
+
+Delete single zombie.
+
+Example response body:
+
+```json
+1
+```
+
+### `GET /api/zombies/:zombieId/items`
+
+Get all items of a zombie with calculated prices in 3 currencies.
+
+Example response body:
+
+```json
+{
+    "rows": [
+        {
+            "_id": "e4cZwPUjZzv11S4X",
+            "zombieId": "ghJ5wq5ZBZVHXQFh",
+            "itemId": "1",
+            "createdAt": "2020-08-26T13:58:02.019Z",
+            "id": 1,
+            "name": "Diamond Sword",
+            "price": 100
+        },
+        {
+            "_id": "JyBaiLOv4xDE2hlG",
+            "zombieId": "ghJ5wq5ZBZVHXQFh",
+            "itemId": "1",
+            "createdAt": "2020-08-26T13:57:52.831Z",
+            "id": 1,
+            "name": "Diamond Sword",
+            "price": 100
+        }
+    ],
+    "total": 2,
+    "page": 1,
+    "pageSize": 10,
+    "totalPages": 1,
+    "pricesTotal": {
+        "EUR": 887.36,
+        "USD": 750.02,
+        "PLN": 200
+    }
+}
+```
+
+### `GET /api/zombies/:zombieId/items/:itemId`
+
+Get specific item that belongs to specific zombie (selected by `zombieId` in query).
+
+Example response:
+
+```json
+{
+    "_id": "e4cZwPUjZzv11S4X",
+    "zombieId": "ghJ5wq5ZBZVHXQFh",
+    "itemId": "1",
+    "createdAt": "2020-08-26T13:58:02.019Z",
+    "id": 1,
+    "name": "Diamond Sword",
+    "price": 100,
+    "pricesTotal": {
+        "EUR": 443.68,
+        "USD": 375.01,
+        "PLN": 100
+    }
+}
+```
+
+### `POST /api/zombies/:zombieId/items`
+
+Create new item on a specific (selected by `zombieId` in query).
+
+Example body:
+
+```json
+{
+    "itemId": "1"
+}
+```
+
+Parameters:
+
+- `itemId: string` - [REQUIRED] Item id from https://zombie-items-api.herokuapp.com/api/items.
+
+Example response body:
+
+```json
+{
+    "rows": [
+        {
+            "_id": "e4cZwPUjZzv11S4X",
+            "zombieId": "ghJ5wq5ZBZVHXQFh",
+            "itemId": "1",
+            "createdAt": "2020-08-26T13:58:02.019Z",
+            "id": 1,
+            "name": "Diamond Sword"
+        }
+    ],
+    "total": 1,
+    "page": 1,
+    "pageSize": 10,
+    "totalPages": 1,
+    "pricesTotal": {
+        "EUR": 443.68,
+        "USD": 375.01,
+        "PLN": 100
+    }
+}
+```
+
+### `PUT /api/zombies/:zombieId/items/:itemId`
+
+Update specific item (selected by `itemId` in query) in specific zombie (selected by `zombieId` in query).
+
+Example body:
+
+```json
+{
+    "itemId": "3"
+}
+```
+
+Parameters:
+
+- `itemId: string` - [REQUIRED] Item id from https://zombie-items-api.herokuapp.com/api/items.
+
+Example response body:
+
+```json
+{
+    "_id": "xHLtM5WkLNihGw5K",
+    "zombieId": "fzYpdCOU5qUMJfJV",
+    "itemId": "3",
+    "createdAt": "2020-08-26T14:05:22.844Z"
+}
+```
+
+### `DELETE /api/zombies/:zombieId/items/:itemId`
+
+Delete specific item (selected by `itemId` in query) in specific zombie (selected by `zombieId` in query).
+
+Example response body:
+
+```json
+1
+```
 
 ## Services
+
 - **api**: API Gateway services
-- **greeter**: Sample service with `hello` and `welcome` actions.
-- **products**: Sample DB service. To use with MongoDB, set `MONGO_URI` environment variables and install MongoDB adapter with `npm i moleculer-db-adapter-mongo`.
-
-## Mixins
-- **db.mixin**: Database access mixin for services. Based on [moleculer-db](https://github.com/moleculerjs/moleculer-db#readme)
-
-
-## Useful links
-
-* Moleculer website: https://moleculer.services/
-* Moleculer Documentation: https://moleculer.services/docs/0.14/
+- **items**: HTTP service to obtain and cache items from https://zombie-items-api.herokuapp.com/api/items.
+- **rates**: HTTP service to obtain and cache rates from http://api.nbp.pl/api/exchangerates/tables/C/today/.
+- **zombies**: CRUD database service for zombies, fully available via API.
+- **zombie-items**: CRUD database service for zombie items, not available via API.
+- **zombie-items-middleware**: Middleware service for zombie items to transform data and requests for `zombie-items`, not available via API.
 
 ## NPM scripts
 
@@ -40,3 +268,9 @@ In the terminal, try the following commands:
 - `npm test`: Run tests & generate coverage report
 - `npm run dc:up`: Start the stack with Docker Compose
 - `npm run dc:down`: Stop the stack with Docker Compose
+
+## Moleculer
+
+[![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
+
+This is a [Moleculer](https://moleculer.services/)-based microservices project. Generated with the [Moleculer CLI](https://moleculer.services/docs/0.14/moleculer-cli.html).

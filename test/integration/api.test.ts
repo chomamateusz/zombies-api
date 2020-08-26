@@ -1,11 +1,10 @@
 import { ServiceSchema, ServiceBroker } from 'moleculer'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 
 import ApiService from '../../services/api.service'
 import ZombiesService, { ZombieSchema } from '../../services/zombies.service'
 import ZombieItemsService from '../../services/zombie-items.service'
 import ZombieItemsMiddlewareService from '../../services/zombie-items-middleware.service'
-import RatesService from '../../services/rates.service'
 
 const MOCK_ITEMS = [
   { id: '1', name: 'Item 1', price: 1 },
@@ -13,12 +12,25 @@ const MOCK_ITEMS = [
   { id: '3', name: 'Item 3', price: 3 },
   { id: '4', name: 'Item 4', price: 4 },
   { id: '5', name: 'Item 5', price: 5 },
+  { id: '6', name: 'Item 6', price: 6 },
 ]
 
 const MockItemsService: ServiceSchema = {
   name: 'items',
   actions: {
     get: () => Promise.resolve(MOCK_ITEMS)
+  }
+}
+
+const MOCK_RATES = [
+  { currency: 'EUR', code: 'EUR', bid: 4, ask: 4 },
+  { currency: 'USD', code: 'USD', bid: 3, ask: 3 },
+]
+
+const MockRatesService: ServiceSchema = {
+  name: 'rates',
+  actions: {
+    get: () => Promise.resolve(MOCK_RATES)
   }
 }
 
@@ -58,7 +70,7 @@ describe('Integration tests', () => {
   broker.createService(ZombieItemsService)
   broker.createService(ZombieItemsMiddlewareService)
   broker.createService(MockItemsService)
-  broker.createService(RatesService)
+  broker.createService(MockRatesService)
 
   let originalNodeEnv: string
 
@@ -206,7 +218,10 @@ describe('Integration tests', () => {
 
       const { data } = await axios.get(makeItemsUrl(zombieId))
 
-      expect(data).toEqual(makeListResponse({ rows: [] }))
+      expect(data).toEqual(makeListResponse({
+        rows: [],
+        pricesTotal: { EUR: 0, USD: 0, PLN: 0 },
+      }))
     })
 
     it('can add items', async () => {
@@ -249,19 +264,66 @@ describe('Integration tests', () => {
 
       const { _id: zombieId } = await getFirstZombie()
 
-      await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '1' } })
       await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '2' } })
       await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '3' } })
       await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '4' } })
+      await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '5' } })
 
       try {
-        await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '5' } })
+        await axios(makeItemsUrl(zombieId), { method: 'POST', data: { itemId: '6' } })
       } catch (error) {
         const errorResponse = error.response.data
         expect(errorResponse.code).toBe(403)
         expect(errorResponse.name).toBe('MoleculerError')
         expect(errorResponse.message).toBe('Can\'t add more than 5 items!')
       }
+    })
+
+    it('can get single item with priceTotal', async () => {
+      expect.assertions(1)
+
+      const { _id: zombieId } = await getFirstZombie()
+
+      const itemId = '1'
+
+      const { data } = await axios.get(makeItemsUrl(zombieId) + '/' + itemId)
+
+      expect(data).toEqual({
+        ...MOCK_ITEMS[0],
+        zombieId,
+        itemId,
+        _id: expect.any(String),
+        pricesTotal: { EUR: 4, USD: 3, PLN: 1 },
+      })
+    })
+
+    it('can get all zombies items with priceTotal', async () => {
+      expect.assertions(1)
+
+      const { _id: zombieId } = await getFirstZombie()
+
+      const { data } = await axios.get(makeItemsUrl(zombieId))
+
+      const USDRates = MOCK_RATES.find((rate) => rate.code === 'USD')
+      const EURRates = MOCK_RATES.find((rate) => rate.code === 'EUR')
+      const expectedItems = MOCK_ITEMS
+        .filter((item, index) => index < 5)
+        .map((item) => ({
+          ...item,
+          itemId: item.id,
+          zombieId,
+          _id: expect.any(String),
+        }))
+        .sort((a, b): number => Number(b.id) - Number(a.id))
+
+      expect(data).toEqual(makeListResponse({
+        rows: expectedItems,
+        pricesTotal: {
+          EUR: 15 * EURRates.ask,
+          USD: 15 * USDRates.ask,
+          PLN: 15
+        }
+      }))
     })
 
   })

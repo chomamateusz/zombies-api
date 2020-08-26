@@ -14,7 +14,11 @@ export default {
 
       aliases: {
         'REST zombies': 'zombies',
-        'REST zombies/:zombieId/items': 'zombie-items-middleware',
+        'GET zombies/:zombieId/items': 'zombie-items-middleware.get',
+        'GET zombies/:zombieId/items/:itemId': 'zombie-items-middleware.get',
+        'POST zombies/:zombieId/items': 'zombie-items-middleware.create',
+        'PUT zombies/:zombieId/items/:itemId': 'zombie-items-middleware.update',
+        'DELETE zombies/:zombieId/items/:itemId': 'zombie-items-middleware.remove',
       },
 
       bodyParsers: {

@@ -1,10 +1,19 @@
 import { ServiceSchema, Context, Errors } from 'moleculer'
 import { RateSchema } from './rates.service'
+import { ItemSchema } from './items.service'
 
 export interface ZombieItemSchema {
-  _id: string;
-  zombieId: string;
-  itemId: string;
+  _id: string
+  zombieId: string
+  itemId: string
+}
+
+export interface ZombieItemPopulatedSchema {
+  _id: string
+  zombieId: string
+  itemId: string
+  name: string
+  price: number
 }
 
 const ZombieItemsService: ServiceSchema = {
@@ -15,6 +24,9 @@ const ZombieItemsService: ServiceSchema = {
     before: {
       '*': 'checkZombieId',
     },
+    after: {
+      get: 'populateItems'
+    }
   },
 
   actions: {
@@ -23,9 +35,9 @@ const ZombieItemsService: ServiceSchema = {
       const itemId = params.itemId
       const zombieId = params.zombieId
 
-      if (!itemId) return ctx.call('zombie-items.find', { query: { zombieId } })
+      if (!itemId) return ctx.call('zombie-items.list', { query: { zombieId }, sort: '-itemId' })
 
-      return ctx.call('zombie-items.find', { query: { zombieId, _id: itemId } }).then(([item]) => item)
+      return ctx.call('zombie-items.find', { query: { zombieId, itemId } }).then(([item]) => item)
     },
     create(ctx: Context) {
       return ctx.call('zombie-items.create', ctx.params)
@@ -33,8 +45,8 @@ const ZombieItemsService: ServiceSchema = {
     update(ctx: Context) {
       return ctx.call('zombie-items.update', ctx.params)
     },
-    list(ctx: Context) {
-      return ctx.call('zombie-items.list', ctx.params)
+    remove(ctx: Context) {
+      return ctx.call('zombie-items.update', ctx.params)
     },
   },
 
@@ -55,25 +67,59 @@ const ZombieItemsService: ServiceSchema = {
       return
     },
 
-    // calculateItemsValue: async (ctx: Context, res: ZombieItemSchema[]): Promise<any> => {
-    //   if (!(res && res.items && Array.isArray(res.items))) return res
+    async populateItems(ctx: Context, res: any): Promise<object> {
+      const params: { itemId?: string } = ctx && ctx.params
+      const itemId = params.itemId
 
-    //   const sumPLN = res.items.reduce((sum, item) => sum + item.price, 0)
+      if (itemId) {
+        const populatedItem = await this.populateItem(ctx, res)
+        const pricesTotal = await this.calculateItemsValue(ctx, [populatedItem])
 
-    //   const rates: RateSchema[] = await ctx.call('rates.get')
+        return {
+          ...populatedItem,
+          pricesTotal,
+        }
+      }
 
-    //   const rateEUR = rates.find((rate) => rate.code === 'EUR')
-    //   const rateUSD = rates.find((rate) => rate.code === 'EUR')
+      const items: ZombieItemSchema[] = res.rows
+      const populatedItems = await Promise.all(items.map((item) => this.populateItem(ctx, item)))
+      const pricesTotal = await this.calculateItemsValue(ctx, populatedItems)
 
-    //   const sumEUR = rateEUR ? (sumPLN * rateEUR.ask) : null
-    //   const sumUSD = rateUSD ? (sumPLN * rateUSD.ask) : null
+      return {
+        ...res,
+        rows: populatedItems,
+        pricesTotal,
+      }
+    },
 
-    //   return {
-    //     ...res,
-    //     total: { EUR: sumEUR, USD: sumUSD, PLN: sumPLN },
-    //   }
+    populateItem: async (ctx: Context, item: ZombieItemSchema): Promise<ZombieItemPopulatedSchema> => {
+      const itemId = item && item.itemId
 
-    // },
+      const items: ItemSchema[] = await ctx.call('items.get')
+
+      const populatedItem = items && items.find((item) => item.id === itemId)
+
+      return {
+        ...item,
+        ...populatedItem,
+      }
+    },
+
+    calculateItemsValue: async (ctx: Context, items: ZombieItemPopulatedSchema[]): Promise<object> => {
+      if (items.length === 0) return { EUR: 0, USD: 0, PLN: 0 }
+
+      const sumPLN = items.reduce((sum, item) => sum + item.price, 0)
+
+      const rates: RateSchema[] = await ctx.call('rates.get')
+
+      const rateEUR = rates.find((rate) => rate.code === 'EUR')
+      const rateUSD = rates.find((rate) => rate.code === 'USD')
+
+      const sumEUR = rateEUR ? (sumPLN * rateEUR.ask) : 0
+      const sumUSD = rateUSD ? (sumPLN * rateUSD.ask) : 0
+
+      return { EUR: sumEUR, USD: sumUSD, PLN: sumPLN }
+    },
 
   }
 

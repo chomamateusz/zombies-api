@@ -2,12 +2,11 @@ import DbService from 'moleculer-db'
 import { ServiceSchema, Context } from 'moleculer'
 
 import { ItemSchema } from './items.service'
-import { RateSchema } from './rates.service'
 
 export interface ZombieSchema {
-  _id: string;
-  name: string;
-  items: ItemSchema[];
+  _id: string
+  name: string
+  items: ItemSchema[]
 }
 
 const ZombiesService: ServiceSchema = {
@@ -16,8 +15,14 @@ const ZombiesService: ServiceSchema = {
 
   mixins: [DbService],
 
+  hooks: {
+    before: {
+      create: 'createdAt'
+    },
+  },
+
   settings: {
-    fields: ['_id', 'name', 'items'],
+    fields: ['_id', 'name', 'items', 'createdAt'],
     entityValidator: {
       name: 'string',
       items: 'array',
@@ -26,7 +31,18 @@ const ZombiesService: ServiceSchema = {
       items: 'zombie-items.get',
     }
   },
-  
+
+  methods: {
+    createdAt: (ctx: Context): Context => {
+      const params: { createdAt?: string } = ctx.params
+      ctx.params = {
+        ...params,
+        createdAt: new Date(),
+      }
+      return ctx
+    }
+  }
+
 }
 
 export default ZombiesService

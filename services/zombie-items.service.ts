@@ -19,13 +19,13 @@ const ZombieItemsService: ServiceSchema = {
 
     before: {
       update: 'checkItemExist',
-      create: ['checkItemExist', 'maxItems'],
+      create: ['checkItemExist', 'maxItems', 'createdAt'],
     },
 
   },
 
   settings: {
-    fields: ['_id', 'zombieId', 'itemId'],
+    fields: ['_id', 'zombieId', 'itemId', 'createdAt'],
     entityValidator: {
       zombieId: 'string',
       itemId: 'string',
@@ -33,6 +33,15 @@ const ZombieItemsService: ServiceSchema = {
   },
 
   methods: {
+
+    createdAt: (ctx: Context): Context => {
+      const params: { createdAt?: string } = ctx.params
+      ctx.params = {
+        ...params,
+        createdAt: new Date(),
+      }
+      return ctx
+    },
 
     checkItemExist: async (ctx: Context): Promise<any> => {
       if (process.env.NODE_ENV === 'test') return ctx

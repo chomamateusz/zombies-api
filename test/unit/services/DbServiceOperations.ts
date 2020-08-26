@@ -27,6 +27,7 @@ const DbServiceOperations = class DbServiceOperations<ItemSchema extends IdWise>
     return {
       ...item,
       _id: expect.any(String),
+      createdAt: expect.any(Date),
     }
   }
 

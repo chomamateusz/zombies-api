@@ -104,6 +104,7 @@ describe('Integration tests', () => {
 
       expect(zombie1Response && zombie1Response.data).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         ...SAMPLE_ZOMBIE_1,
       })
 
@@ -118,6 +119,7 @@ describe('Integration tests', () => {
         rows: [
           {
             _id: expect.any(String),
+            createdAt: expect.any(String),
             ...SAMPLE_ZOMBIE_1,
           }
         ],
@@ -133,6 +135,7 @@ describe('Integration tests', () => {
 
       expect(data).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         ...SAMPLE_ZOMBIE_1,
       })
     })
@@ -150,6 +153,7 @@ describe('Integration tests', () => {
 
       expect(updateData).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         ...SAMPLE_ZOMBIE_1,
         name: 'Zombie 123',
       })
@@ -162,6 +166,7 @@ describe('Integration tests', () => {
 
       expect(rollbackData).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         ...SAMPLE_ZOMBIE_1,
       })
 
@@ -206,6 +211,7 @@ describe('Integration tests', () => {
 
       expect(zombie1Response && zombie1Response.data).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         ...SAMPLE_ZOMBIE_1,
       })
 
@@ -236,6 +242,7 @@ describe('Integration tests', () => {
 
       expect(data).toEqual({
         _id: expect.any(String),
+        createdAt: expect.any(String),
         itemId: '1',
         zombieId: zombieId,
       })
@@ -293,6 +300,7 @@ describe('Integration tests', () => {
         zombieId,
         itemId,
         _id: expect.any(String),
+        createdAt: expect.any(String),
         pricesTotal: { EUR: 4, USD: 3, PLN: 1 },
       })
     })
@@ -313,6 +321,7 @@ describe('Integration tests', () => {
           itemId: item.id,
           zombieId,
           _id: expect.any(String),
+          createdAt: expect.any(String),
         }))
         .sort((a, b): number => Number(b.id) - Number(a.id))
 
